@@ -26,7 +26,7 @@ class Piece:
 class Pawn(Piece):
     
     def __init__(self, color):
-        # self.direction == -1 if color == 'white' else 1
+        self.direction = -1 if color == 'white' else 1
         
         super().__init__('pawn', color, 1.0)
         
@@ -54,4 +54,3 @@ class King(Piece):
     
     def __init__(self, color):
         super().__init__('king', color, 100.0) 
-        
