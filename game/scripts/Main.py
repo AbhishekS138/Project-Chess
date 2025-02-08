@@ -10,33 +10,35 @@ class Main:
         self.surface = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess")
         
-        self.gameSurface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
-        self.menuSurface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
+        self.game_surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
+        self.menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
         self.game = Game()
         self.drag = Drag()
                 
     def run(self):  
         #Variables to be used
-        _gameSurface = self.gameSurface
-        _menuSurface = self.menuSurface
+        _game_surface = self.game_surface
+        _menu_surface = self.menu_surface
         
         _surface = self.surface
         _game = self.game
-        _board = self.game.board
-        _drag = self.drag
+        _board = _game.board
+        _drag = _game.drag
         
         while True:
             
-            _menuSurface.fill((255, 255, 255))
+            _menu_surface.fill((255, 255, 255))
             
-            _game.displayBoard(_gameSurface)
-            _game.displayPieces(_gameSurface, self.drag)
+            #Display methods
+            _game.display_board(_game_surface)
+            _game.display_moves(_game_surface)
+            _game.display_pieces(_game_surface)
             
             if _drag.dragging:
-                _drag.updateBlit(_gameSurface)
+                _drag.update_blit(_game_surface)
             
-            _surface.blit(_gameSurface, (0, 0))
-            _surface.blit(_menuSurface, (GAME_WIDTH, 0))
+            _surface.blit(_game_surface, (0, 0))
+            _surface.blit(_menu_surface, (GAME_WIDTH, 0))
             
             
             for event in pygame.event.get():
@@ -45,21 +47,30 @@ class Main:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     _drag.updatePos(event.pos)
                     
-                    clickedRow = _drag.mouseY // SQUARE_SIZE
-                    clickedCol = _drag.mouseX // SQUARE_SIZE
+                    clicked_row = _drag.mouse_y // SQUARE_SIZE
+                    clicked_col = _drag.mouse_x // SQUARE_SIZE
                     
                     #Check if piece is clicked
-                    if _board.squares[clickedRow][clickedCol].hasPiece():
-                        piece = _board.squares[clickedRow][clickedCol].piece
+                    if _board.squares[clicked_row][clicked_col].has_piece():
+                        piece = _board.squares[clicked_row][clicked_col].piece
+                        _board.calc_moves(piece, clicked_row, clicked_col)
                         _drag.initialPos(event.pos)
                         _drag.dragSet(piece)
+                        
+                        #Display methods
+                        _game.display_board(_game_surface)
+                        _game.display_moves(_game_surface)
+                        _game.display_pieces(_game_surface)
                 
                 #On mouse movement
                 elif event.type == pygame.MOUSEMOTION:
                     if _drag.dragging:
                         _drag.updatePos(event.pos)
-                        _game.displayBoard(_gameSurface)
-                        _drag.updateBlit(_gameSurface)
+                        
+                        #Display methods
+                        _game.display_board(_game_surface)
+                        _game.display_moves(_game_surface)
+                        _drag.update_blit(_game_surface)
                 
                 #On mouse release
                 elif event.type == pygame.MOUSEBUTTONUP:

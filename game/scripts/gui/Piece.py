@@ -2,25 +2,25 @@ import os
 
 class Piece:
     
-    def __init__(self, name, color, value, image = None, imageRect = None):
+    def __init__(self, name, color, value, image = None, image_rect = None):
         self.name = name
         self.color = color
-        valueSign = 1 if color == 'white' else -1
-        self.value = value * valueSign
+        value_sign = 1 if color == 'white' else -1
+        self.value = value * value_sign
         self.image = image
-        self.setImage()
-        self.imageRect = imageRect
+        self.set_image()
+        self.image_rect = image_rect
         self.moves = []
         self.moved = False
         
-    def setImage(self):
+    def set_image(self):
         # Get the absolute path to the assets folder
         base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets"))
 
         # Construct the full path to the piece image
         self.image = os.path.join(base_path, f"{self.color}_{self.name}.png")
         
-    def addMoves(self, move):
+    def add_move(self, move):
         self.moves.append(move)
 
 class Pawn(Piece):

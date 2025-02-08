@@ -4,31 +4,31 @@ from game.scripts.Constants import *
 class Drag:
     
     def __init__(self):
-        self.mouseX = 0
-        self.mouseY = 0
-        self.initialRow = 0
-        self.initialCol = 0
-        self.finalRow = 0
-        self.finalCol = 0
+        self.mouse_x = 0
+        self.mouse_y = 0
+        self.initial_row = 0
+        self.initial_col = 0
+        self.final_row = 0
+        self.final_col = 0
         self.piece = None
         self.dragging = False
     
     #Blit method
-    def updateBlit(self, surface):
+    def update_blit(self, surface):
         #Image to be rendered
         image = pygame.image.load(self.piece.image)
         #Rect to be rendered
-        imageRect = (self.mouseX, self.mouseY)
-        self.piece.imageRect = image.get_rect(center = imageRect)
-        surface.blit(image, self.piece.imageRect)
+        image_rect = (self.mouse_x, self.mouse_y)
+        self.piece.image_rect = image.get_rect(center = image_rect)
+        surface.blit(image, self.piece.image_rect)
     
     #Update methods
     def updatePos(self, pos):
-        self.mouseX, self.mouseY = pos
+        self.mouse_x, self.mouse_y = pos
         
     def initialPos(self, pos):
-        self.initialRow = pos[1] // SQUARE_SIZE
-        self.initialCol = pos[0] // SQUARE_SIZE
+        self.initial_row = pos[1] // SQUARE_SIZE
+        self.initial_col = pos[0] // SQUARE_SIZE
         
     def dragSet(self, piece):
         self.piece = piece
