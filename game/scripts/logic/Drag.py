@@ -23,17 +23,17 @@ class Drag:
         surface.blit(image, self.piece.image_rect)
     
     #Update methods
-    def updatePos(self, pos):
+    def update_pos(self, pos):
         self.mouse_x, self.mouse_y = pos
         
-    def initialPos(self, pos):
+    def initial_pos(self, pos):
         self.initial_row = pos[1] // SQUARE_SIZE
         self.initial_col = pos[0] // SQUARE_SIZE
         
-    def dragSet(self, piece):
+    def drag_set(self, piece):
         self.piece = piece
         self.dragging = True
         
-    def undragSet(self):
+    def undrag_set(self):
         self.piece = None
         self.dragging = False

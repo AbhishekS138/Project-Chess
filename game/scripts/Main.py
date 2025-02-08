@@ -3,6 +3,8 @@ import pygame
 from game.scripts.Constants import *
 from game.scripts.Game import Game
 from game.scripts.logic.Drag import Drag
+from game.scripts.gui.Square import Square
+from game.scripts.logic.Move import Move
 class Main:
     
     def __init__(self): 
@@ -45,7 +47,7 @@ class Main:
                 
                 #On mouse click
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    _drag.updatePos(event.pos)
+                    _drag.update_pos(event.pos)
                     
                     clicked_row = _drag.mouse_y // SQUARE_SIZE
                     clicked_col = _drag.mouse_x // SQUARE_SIZE
@@ -53,19 +55,21 @@ class Main:
                     #Check if piece is clicked
                     if _board.squares[clicked_row][clicked_col].has_piece():
                         piece = _board.squares[clicked_row][clicked_col].piece
-                        _board.calc_moves(piece, clicked_row, clicked_col)
-                        _drag.initialPos(event.pos)
-                        _drag.dragSet(piece)
                         
-                        #Display methods
-                        _game.display_board(_game_surface)
-                        _game.display_moves(_game_surface)
-                        _game.display_pieces(_game_surface)
+                        if piece.color == _game.next_turn_player:
+                            _board.calc_moves(piece, clicked_row, clicked_col)
+                            _drag.initial_pos(event.pos)
+                            _drag.drag_set(piece)
+                            
+                            #Display methods
+                            _game.display_board(_game_surface)
+                            _game.display_moves(_game_surface)
+                            _game.display_pieces(_game_surface)
                 
                 #On mouse movement
                 elif event.type == pygame.MOUSEMOTION:
                     if _drag.dragging:
-                        _drag.updatePos(event.pos)
+                        _drag.update_pos(event.pos)
                         
                         #Display methods
                         _game.display_board(_game_surface)
@@ -74,7 +78,21 @@ class Main:
                 
                 #On mouse release
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    _drag.undragSet()
+                    if _drag.dragging:
+                        _drag.update_pos(event.pos)
+                        final_row = _drag.mouse_y // SQUARE_SIZE
+                        final_col = _drag.mouse_x // SQUARE_SIZE
+                        
+                        initial = Square(_drag.initial_row, _drag.initial_col)
+                        final = Square(final_row, final_col)
+                        move = Move(initial, final)
+                        
+                        if _board.valid_move(_drag.piece, move):
+                            _board.final_move(_drag.piece, move)   
+                        
+                        _game.next_turn()                     
+                    
+                    _drag.undrag_set()
                 
                 #On window close
                 elif event.type == pygame.QUIT:

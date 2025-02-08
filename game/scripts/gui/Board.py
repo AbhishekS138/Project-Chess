@@ -8,8 +8,10 @@ class Board:
     #Initialize board with double dimensional square list
     def __init__(self):
         self.squares = [[Square(row, col) for row in range(ROWS)] for col in range(COLS)]
+        self.last_move = None
         self._add_piece('white')
         self._add_piece('black')
+    
         
     #Calculate valid moves for each piece
     def calc_moves(self, piece, row, col):
@@ -150,6 +152,22 @@ class Board:
                 (row, col+1)
             ])    
         
+    
+    def final_move(self, piece, move):
+        initial = move.initial
+        final = move.final
+        
+        self.squares[initial.row][initial.col].piece = None
+        self.squares[final.row][final.col].piece = piece
+        
+        piece.moved = True
+        piece.clear_moves()
+        self.last_move = move
+    
+    
+    def valid_move(self, piece, move):
+        return move in piece.moves
+    
     
     #Add piece of a color to any square of the board
     def _add_piece(self, color):

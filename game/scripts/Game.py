@@ -6,6 +6,7 @@ from game.scripts.logic.Drag import Drag
 class Game:
     
     def __init__(self):
+        self.next_turn_player = 'white'
         self.board = Board()
         self.drag = Drag()
     
@@ -49,3 +50,7 @@ class Game:
                 color = DEEP_RED if (move.final.row + move.final.col) % 2 == 0 else LIGHT_RED
                 rect = (move.final.col * SQUARE_SIZE, move.final.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
                 pygame.draw.rect(surface, color, rect)
+    
+    #other methods
+    def next_turn(self):
+        self.next_turn_player = 'black' if self.next_turn_player == 'white' else 'white'
