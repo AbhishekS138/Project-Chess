@@ -90,7 +90,8 @@ class Main:
                         if _board.valid_move(_drag.piece, move):
                             _board.final_move(_drag.piece, move)   
                         
-                        _game.next_turn()                     
+                        if _drag.piece.moved == True:
+                            _game.next_turn()                     
                     
                     _drag.undrag_set()
                 

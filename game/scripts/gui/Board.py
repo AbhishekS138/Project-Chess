@@ -176,27 +176,21 @@ class Board:
         #Pawn Placement
         for col in range(COLS):
             self.squares[row_pawn][col] = Square(row_pawn, col, Pawn(color))
-        self.squares[5][6] = Square(5, 6, Pawn(color))
             
         #Rook Placement
         self.squares[row_king][0] = Square(row_king, 0, Rook(color))
         self.squares[row_king][7] = Square(row_king, 7, Rook(color))
-        self.squares[3][7] = Square(3, 7, Rook(color))
         
         #Knight Placement
         self.squares[row_king][1] = Square(row_king, 1, Knight(color))
         self.squares[row_king][6] = Square(row_king, 6, Knight(color))
-        self.squares[4][6] = Square(4, 6, Knight(color))
         
         #Bishop Placement
         self.squares[row_king][2] = Square(row_king, 2, Bishop(color))
         self.squares[row_king][5] = Square(row_king, 5, Bishop(color))
-        self.squares[4][4] = Square(4, 4, Bishop(color))
         
         #Queen Placement
         self.squares[row_king][3] = Square(row_king, 3, Queen(color))
-        self.squares[3][3] = Square(3, 3, Queen(color))
         
         #King Placement
         self.squares[row_king][4] = Square(row_king, 4, King(color))
-        self.squares[5][2] = Square(5, 2, King(color))
