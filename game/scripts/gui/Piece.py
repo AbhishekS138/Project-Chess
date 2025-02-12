@@ -15,10 +15,10 @@ class Piece:
         
     def set_image(self):
         # Get the absolute path to the assets folder
-        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets"))
+        base_image_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets/images"))
 
         # Construct the full path to the piece image
-        self.image = os.path.join(base_path, f"{self.color}_{self.name}.png")
+        self.image = os.path.join(base_image_path, f"{self.color}_{self.name}.png")
         
     def add_move(self, move):
         self.moves.append(move)

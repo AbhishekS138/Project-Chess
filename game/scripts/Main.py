@@ -1,5 +1,6 @@
 import sys
 import pygame
+
 from game.scripts.Constants import *
 from game.scripts.Game import Game
 from game.scripts.logic.Drag import Drag
@@ -27,14 +28,17 @@ class Main:
         _board = _game.board
         _drag = _game.drag
         
+        def display():   
+            _game.display_board(_game_surface)
+            _game.display_last_move(_game_surface)
+            _game.display_moves(_game_surface)
+            _game.display_pieces(_game_surface)
+        
         while True:
             
             _menu_surface.fill((255, 255, 255))
             
-            #Display methods
-            _game.display_board(_game_surface)
-            _game.display_moves(_game_surface)
-            _game.display_pieces(_game_surface)
+            display()
             
             if _drag.dragging:
                 _drag.update_blit(_game_surface)
@@ -61,19 +65,15 @@ class Main:
                             _drag.initial_pos(event.pos)
                             _drag.drag_set(piece)
                             
-                            #Display methods
-                            _game.display_board(_game_surface)
-                            _game.display_moves(_game_surface)
-                            _game.display_pieces(_game_surface)
+                            display()
                 
                 #On mouse movement
                 elif event.type == pygame.MOUSEMOTION:
                     if _drag.dragging:
                         _drag.update_pos(event.pos)
                         
-                        #Display methods
-                        _game.display_board(_game_surface)
-                        _game.display_moves(_game_surface)
+                        display()
+                        
                         _drag.update_blit(_game_surface)
                 
                 #On mouse release
@@ -88,12 +88,21 @@ class Main:
                         move = Move(initial, final)
                         
                         if _board.valid_move(_drag.piece, move):
-                            _board.final_move(_drag.piece, move)   
+                            _board.final_move(_drag.piece, move)
+                            
+                            display() 
                         
                         if _drag.piece.moved == True:
-                            _game.next_turn()                     
+                            _drag.piece.moved = False
+                            _game.next_turn()                   
                     
                     _drag.undrag_set()
+                    
+                #On key press(t)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_t:
+                        _game.config.change_theme()
+                        display()
                 
                 #On window close
                 elif event.type == pygame.QUIT:
