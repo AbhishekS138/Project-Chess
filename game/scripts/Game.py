@@ -3,7 +3,7 @@ from game.scripts.Constants import *
 from game.scripts.gui.Board import Board
 from game.scripts.logic.Drag import Drag
 from game.scripts.config.Config import Config
-
+from game.scripts.gui.Square import Square
 class Game:
     
     def __init__(self):
@@ -24,6 +24,18 @@ class Game:
                 color = theme.bg.light if (row + col) % 2 == 0 else theme.bg.dark
                 rect = (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)               
                 pygame.draw.rect(surface, color, rect)
+                
+                if col == 0:
+                    color = theme.bg.dark if row % 2 == 0 else theme.bg.light
+                    label = self.config.font.render(str(ROWS - row), True, color)
+                    label_pos = (5, 5 + row * SQUARE_SIZE)
+                    surface.blit(label, label_pos)
+                
+                if row == 7:
+                    color = theme.bg.dark if (row + col) % 2 == 0 else theme.bg.light
+                    label = self.config.font.render(Square.get_alphacol(col), True, color)
+                    label_pos = (col * SQUARE_SIZE + SQUARE_SIZE - 15, HEIGHT - 20)
+                    surface.blit(label, label_pos)
                 
     #display pieces
     def display_pieces(self, surface):
@@ -78,3 +90,12 @@ class Game:
         
     def change_theme(self):
         self.config.change_theme()
+        
+    def reset(self):
+        self.__init__()
+    
+    def play_sound(self, captured=False):
+        if captured:
+            self.config.capture_sound.play()
+        else:
+            self.config.move_self_sound.play()

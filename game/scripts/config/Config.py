@@ -12,10 +12,11 @@ class Config:
         self.add_theme()
         self.index = 0
         self.theme = self.themes[self.index]
+        self.font = pygame.font.SysFont('monospace', 14, bold=True)        
         
-        # base_sound_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets/sounds"))
-        # self.move_self_sound = Sound(os.path.join(base_sound_path, "move_self.ogg"))
-        # self.capture_sound = Sound(os.path.join(base_sound_path, "capture.ogg")) 
+        base_sound_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets/sounds"))
+        self.move_self_sound = Sound(os.path.join(base_sound_path, "move_self.wav"))
+        self.capture_sound = Sound(os.path.join(base_sound_path, "capture.wav")) 
     
     def change_theme(self):
         self.index += 1
