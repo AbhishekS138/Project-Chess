@@ -12,6 +12,7 @@ class Piece:
         self.image_rect = image_rect
         self.moves = []
         self.moved = False
+        self.first_move = False
         
     def set_image(self):
         # Get the absolute path to the assets folder
@@ -56,4 +57,6 @@ class Queen(Piece):
 class King(Piece):
     
     def __init__(self, color):
+        self.left_rook = None
+        self.right_rook = None
         super().__init__('king', color, 100.0) 

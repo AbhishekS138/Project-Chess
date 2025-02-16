@@ -12,6 +12,7 @@ class Game:
         self.board = Board()
         self.drag = Drag()
         self.config = Config()
+        self.config.game_start_sound.play()
     
     #display methods
     
@@ -33,7 +34,7 @@ class Game:
                 
                 if row == 7:
                     color = theme.bg.dark if (row + col) % 2 == 0 else theme.bg.light
-                    label = self.config.font.render(Square.get_alphacol(col), True, color)
+                    label = self.config.font.render(str(chr(col + 97)), True, color)
                     label_pos = (col * SQUARE_SIZE + SQUARE_SIZE - 15, HEIGHT - 20)
                     surface.blit(label, label_pos)
                 
@@ -94,8 +95,11 @@ class Game:
     def reset(self):
         self.__init__()
     
-    def play_sound(self, captured=False):
+    def move_sound(self, captured=False):
         if captured:
             self.config.capture_sound.play()
         else:
             self.config.move_self_sound.play()
+            
+    def illegal_sound(self):
+        self.config.illegal_sound.play()

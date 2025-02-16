@@ -57,15 +57,16 @@ class Main:
                     clicked_col = _drag.mouse_x // SQUARE_SIZE
                     
                     #Check if piece is clicked
-                    if _board.squares[clicked_row][clicked_col].has_piece():
-                        piece = _board.squares[clicked_row][clicked_col].piece
-                        
-                        if piece.color == _game.next_turn_player:
-                            _board.calc_moves(piece, clicked_row, clicked_col)
-                            _drag.initial_pos(event.pos)
-                            _drag.drag_set(piece)
+                    if clicked_row < 8 and clicked_col < 8:
+                        if _board.squares[clicked_row][clicked_col].has_piece():
+                            piece = _board.squares[clicked_row][clicked_col].piece
                             
-                            display()
+                            if piece.color == _game.next_turn_player:
+                                _board.calc_moves(piece, clicked_row, clicked_col)
+                                _drag.initial_pos(event.pos)
+                                _drag.drag_set(piece)
+                                
+                                display()
                 
                 #On mouse movement
                 elif event.type == pygame.MOUSEMOTION:
@@ -92,12 +93,15 @@ class Main:
                             
                             _board.final_move(_drag.piece, move)
                             
-                            _game.play_sound(captured)
-                            display() 
+                            _game.move_sound(captured)
+                            display()
+                        
+                        else:
+                            _game.illegal_sound() 
                         
                         if _drag.piece.moved == True:
                             _drag.piece.moved = False
-                            _game.next_turn()                   
+                            _game.next_turn()
                     
                     _drag.undrag_set()
                     
