@@ -4,7 +4,9 @@ import os
 # Add the game directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from game.scripts.Main import main
+#add Main class
+from game.scripts.Main import Main
 
-if __name__ == "__main__":
-    main.run()
+#call run method of Main class
+main = Main()
+main.run()

@@ -6,19 +6,29 @@ WIDTH = 800
 GAME_HEIGHT = 600
 GAME_WIDTH = 600
 
-#Menu dimensions
+#Menu Screen dimensions
 MENU_HEIGHT = 600
 MENU_WIDTH = 200
 
 #Board dimensions
 ROWS = 8
 COLS = 8
+#Square dimensions
 SQUARE_SIZE = GAME_HEIGHT // ROWS
 
 #Colors
 LIGHT_RED = '#C86464'           #Light enemy
 DARK_RED = '#C84646'            #Dark enemy
 
+#Theme colors have:
+#       Light: Light Squares
+#       Dark: Dark Squares
+#       Trace_Light: Light Last Move
+#       Trace_Dark: Dark Last Move
+#       Move_Light: Light Move
+#       Move_Dark: Dark Move
+        
+        
 #Theme Green
 GREEN_LIGHT = '#EBECD0'
 GREEN_DARK = '#739552'

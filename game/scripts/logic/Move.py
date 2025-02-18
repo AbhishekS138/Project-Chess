@@ -5,5 +5,6 @@ class Move:
         self.initial = initial
         self.final = final
         
+    #equating two Move objects
     def __eq__(self, value):
         return self.initial == value.initial and self.final == value.final

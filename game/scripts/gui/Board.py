@@ -8,17 +8,18 @@ import pygame
 
 class Board:
     
-    #Initialize board with double dimensional square list
+    #initialize board with double dimensional square list
     def __init__(self):
+        #a list of rows, each being a list of Square objects
         self.squares = [[Square(row, col) for row in range(ROWS)] for col in range(COLS)]
-        self.last_move = None
-        self._add_piece('white')
-        self._add_piece('black')
-        self.config = Config()
+        self.last_move = None           #last move made on the board
+        self._add_piece('white')        #adds pieces with white color
+        self._add_piece('black')        #adds pieces with black color
+        self.config = Config()          #Config object
     
-    #Add piece of a color to any square of the board
+    #add piece of a color to any square of the board
     def _add_piece(self, color):
-        row_pawn, row_king = (6, 7) if color == 'white' else (1, 0)
+        row_pawn, row_king = (6, 7) if color == 'white' else (1, 0)         #rows for pawns and king
         
         #Pawn Placement
         for col in range(COLS):
@@ -42,25 +43,27 @@ class Board:
         #King Placement
         self.squares[row_king][4] = Square(row_king, 4, King(color))
     
+    #method to change the board attributes if a move is made
     def final_move(self, piece, move):
-        initial = move.initial
-        final = move.final
+        initial = move.initial          #initial Square of move
+        final = move.final              #final Square of move
         
         #game board piece update
-        self.squares[initial.row][initial.col].piece = None
-        self.squares[final.row][final.col].piece = piece
+        self.squares[initial.row][initial.col].piece = None         #initial Square piece set to None
+        self.squares[final.row][final.col].piece = piece            #final Square piece set to actual piece
         
         #pawn promotion
         if isinstance(piece, Pawn):
-            self.promotion(piece, final)
+            self.promotion(piece, final)            #calls method to promote Pawn piece at final Square
         
         #castling
         if isinstance(piece, King):
-            if abs(initial.col - final.col) == 2:
-                difference = final.col - initial.col
-                rook = piece.left_rook if difference < 0 else piece.right_rook
-                if isinstance(rook, Rook):
-                    self.final_move(rook, rook.moves[-1])
+            if abs(initial.col - final.col) == 2:                                   #if King moves 2 squares
+                difference = final.col - initial.col                                #difference between final and initial col
+                rook = piece.left_rook if difference < 0 else piece.right_rook      #left rook if king moves to left, else right rook
+                if isinstance(rook, Rook):                                          #if rook belongs to Rook class
+                    self.config.castle_sound.play()                                 #play castling sound
+                    self.final_move(rook, rook.moves[-1])                           #move rook as per the last move in its moves list
         
         #move set to true
         piece.moved = True
@@ -70,111 +73,119 @@ class Board:
         #set last move to true (for rendering purposes)
         self.last_move = move
         
-        print(f'{piece.color} {piece.name} moved from [{ROWS-initial.row}, {chr(initial.col+97)}] to [{ROWS-final.row}, {chr(final.col+97)}]')
+        #debug print, prints the move made
+        print(f'{piece.color} {piece.name} moved from {chr(initial.col+97)}{ROWS-initial.row} to {chr(final.col+97)}{ROWS-final.row}')
     
+    #method to check if a move is in valid moves list of piece
     def valid_move(self, piece, move):
         return move in piece.moves
     
+    #method to check if a move puts the king in check
+    def in_check(self, piece, move):
+        pass
+    
+    #method to promote a Pawn to a queen
     def promotion(self, piece, final):
-        if final.row == 0 or final.row == 7:
-            self.config.promote_sound.play()
-            self.squares[final.row][final.col].piece = Queen(piece.color)
+        if final.row == 0 or final.row == 7:                                    #checks if pawn has reached 0th or 7th row
+            self.config.promote_sound.play()                                    #plays promotion sound
+            self.squares[final.row][final.col].piece = Queen(piece.color)       #renders a Queen piece at final Square
     
     #defining castling move squares of rooks and king 
     def castle_moves(self, king, rook, rook_col):
-        row = 0 if king.color == 'black' else 7
-        left_col = 1 if rook_col == 0 else 5
-        right_col = 4 if rook_col == 0 else 7
+        row = 0 if king.color == 'black' else 7                                 #sets row number as per piece's color
         
-        for i in range(left_col, right_col):
-            #a piece is blocking the castle
-                if self.squares[row][i].has_piece():
+        #left col and right define columns to check for pieces obstructing castling
+        left_col = 1 if rook_col == 0 else 5                                    #sets left column number as per rook's column
+        right_col = 4 if rook_col == 0 else 7                                   #sets right column number as per rook's column
+        while left_col < right_col:                                             #iterates from left col(inclusive) to right col(exclusive)
+                if self.squares[row][left_col].has_piece():                     #a piece is blocking the castle
                     break
+                left_col += 1
                                 
-        if i == right_col - 1:
-            king.left_rook = rook if rook_col == 0 else None
-            king.right_rook = rook if rook_col == 7 else None
+        if left_col == right_col:                                               #if the iterator i has verified no obstructions upto right col
+            king.left_rook = rook if rook_col == 0 else None                    #left rook set to rook if rook_col is 0, else None
+            king.right_rook = rook if rook_col == 7 else None                   #right rook set to rook if rook_col is 7, else None
                                     
             #rook move
-            initial = Square(row, rook_col)
-            final = Square(row, 3) if rook_col == 0 else Square(row, 5)
-            move = Move(initial, final)
-            rook.add_move(move)
+            initial = Square(row, rook_col)                                     #initial Square for rook
+            final = Square(row, 3) if rook_col == 0 else Square(row, 5)         #final Square for rook, col = 3 or 5 depending on rook
+            move = Move(initial, final)                                         #Move object for rook
+            rook.add_move(move)                                                 #adds the move to valid moves list of rook
                                     
-            #king move
-            initial = Square(row, 4)
-            final = Square(row, 2) if rook_col == 0 else Square(row, 6)
-            move = Move(initial, final)
-            king.add_move(move)
+            #king move 
+            initial = Square(row, 4)                                            #initial Square for king
+            final = Square(row, 2) if rook_col == 0 else Square(row, 6)         #final Square for king, col = 2 or 6 depending on rook
+            move = Move(initial, final)                                         #Move object for king
+            king.add_move(move)                                                 #adds the move to valid moves list of king
     
     #Calculate valid moves for each piece
     def calc_moves(self, piece, row, col):
         
+        #moves calculation for pawns
         def pawn_moves():
-            #steps
-            steps = 1 if piece.moved else 2
+            #steps for pawn piece
+            steps = 1 if piece.first_move else 2
             
-            #Forward
-            start = row + piece.direction
-            end = row + (piece.direction * (1 + steps))
-            for possible_move_row in range(start, end, piece.direction):
-                if Square.in_range(possible_move_row):
-                    if self.squares[possible_move_row][col].is_empty():
-                        initial = Square(row, col)
-                        final = Square(possible_move_row, col)
-                        
-                        move = Move(initial, final)
-                        piece.add_move(move)
-                    #Blocked
+            #forward, no capture
+            start = row + piece.direction                                   #start row for pawn
+            end = row + (piece.direction * (1 + steps))                     #end row for pawn
+            for possible_move_row in range(start, end, piece.direction):    #iterates from start to end row in direction of piece
+                if Square.in_range(possible_move_row):                      #if possible_move_row is within range(0 to 7)
+                    if self.squares[possible_move_row][col].is_empty():     #if the square is empty
+                        initial = Square(row, col)                          #initial Square for move
+                        final = Square(possible_move_row, col)              #final Square for move
+                        move = Move(initial, final)                         #Move object for pawn
+                        piece.add_move(move)                                #adds the move to valid moves list of pawn
                     else:
-                        break
-                #Not in range
+                        break                                               #blocked by piece
                 else:
-                    break
+                    break                                                   #out of range
             
-            #Diagonal
-            possible_move_row = row + piece.direction
-            possible_move_cols = [col-1, col+1]
-            for possible_move_col in possible_move_cols:
-                if Square.in_range(possible_move_row, possible_move_col):
-                    if self.squares[possible_move_row][possible_move_col].has_enemy(piece.color):
-                        initial = Square(row, col)
-                        final = Square(possible_move_row, possible_move_col)
-                        
-                        move = Move(initial, final)
-                        piece.add_move(move)
+            #diagonal, to capture
+            possible_move_row = row + piece.direction                       #final row for pawn
+            possible_move_cols = [col-1, col+1]                             #left or right col for pawn
+            for possible_move_col in possible_move_cols:                    #iterates over left and right col
+                if Square.in_range(possible_move_row, possible_move_col):   #if possible_move_row and possible_move_col are within range(0 to 7)
+                    if self.squares[possible_move_row][possible_move_col].has_enemy(piece.color):   #if the square has enemy piece
+                        initial = Square(row, col)                          #initial Square for move
+                        final_piece = self.squares[possible_move_row][possible_move_col].piece      #enemy piece
+                        final = Square(possible_move_row, possible_move_col, final_piece)           #final Square for move
+                        move = Move(initial, final)                         #Move object for pawn
+                        piece.add_move(move)                                #adds the move to valid moves list of pawn
         
+        #moves calculation for knights and kings
         def fixed_step_moves(possible_moves):
             
-            for possible_move in possible_moves:
+            for possible_move in possible_moves:                                    #iterates through all moves in given list of moves
                 possible_move_row, possible_move_col = possible_move
                 
-                if Square.in_range(possible_move_row, possible_move_col):
+                if Square.in_range(possible_move_row, possible_move_col):           #if possible row and col are within range(0 to 7)
                     if self.squares[possible_move_row][possible_move_col].is_empty_or_enemy(piece.color):
                         
-                        #Create initial and final move squares
+                        #create initial and final Square objects
                         initial = Square(row, col)
                         final = Square(possible_move_row, possible_move_col)
                         
-                        #Create move
+                        #create move and add to valid moves list
                         move = Move(initial, final)
                         piece.add_move(move)
                 
             #Castling        
             if isinstance(piece, King):
-                if not piece.first_move:
-                    left_rook = self.squares[row][0].piece
-                    right_rook = self.squares[row][7].piece
+                if not piece.first_move:                                        #if piece has not moved yet
+                    left_rook = self.squares[row][0].piece                      #assigns left rook
+                    right_rook = self.squares[row][7].piece                     #assigns right rook
 
                     #queen-side castling
                     if isinstance(left_rook, Rook):
                         if not left_rook.first_move:
-                            self.castle_moves(piece, left_rook, 0)                    
+                            self.castle_moves(piece, left_rook, 0)              #castles with rook_col = 0 if rook hasn't moved yet       
                     #king-side castling
                     if isinstance(right_rook, Rook):
                         if not right_rook.first_move:
-                            self.castle_moves(piece, right_rook, 7)
+                            self.castle_moves(piece, right_rook, 7)             #castles with rook_col = 7 if rook hasn't moved yet
         
+        #moves calculation for bishops, rooks, and queens
         def variable_step_moves(possible_moves):
             
             for possible_move in possible_moves:
@@ -184,79 +195,91 @@ class Board:
                 
                 while True:
                     if Square.in_range(possible_move_row, possible_move_col):
-
+                        
+                        #create initial and final Square objects
                         initial = Square(row, col)
                         final = Square(possible_move_row, possible_move_col)
                         
+                        #create move
                         move = Move(initial, final)
                         
+                        #add move to valid moves list if Square is empty, and continue the loop
                         if self.squares[possible_move_row][possible_move_col].is_empty():
                             piece.add_move(move)
                         
-                        if self.squares[possible_move_row][possible_move_col].has_team(piece.color):
+                        #break the loop if obstructed by team piece
+                        elif self.squares[possible_move_row][possible_move_col].has_team(piece.color):
                             break
                             
-                        if self.squares[possible_move_row][possible_move_col].has_enemy(piece.color):
+                        #break the loop if obstructed by enemy piece, but add move to valid moves list to capture the piece
+                        elif self.squares[possible_move_row][possible_move_col].has_enemy(piece.color):
                             piece.add_move(move)
                             break
-                            
+                    
+                    #row and col are out of range        
                     else:
                         break
                     
-                    possible_move_row += row_line
-                    possible_move_col += col_line
+                    possible_move_row += row_line       #increment row number using given increment
+                    possible_move_col += col_line       #increment column number using given increment
         
+        #calling moves calculation method for pawns
         if isinstance(piece, Pawn):
             pawn_moves()    
         
+        #calling moves calculation method for knights
         elif isinstance(piece, Knight):
             fixed_step_moves([
-                (row+2, col-1),
-                (row+2, col+1),
-                (row-2, col-1),
-                (row-2, col+1),
-                (row-1, col-2),
-                (row-1, col+2),
-                (row+1, col-2),
-                (row+1, col+2)
+                (row+2, col-1),         #down-left
+                (row+2, col+1),         #down-right
+                (row-2, col-1),         #up-left
+                (row-2, col+1),         #up-right
+                (row-1, col-2),         #left-up
+                (row-1, col+2),         #right-up
+                (row+1, col-2),         #left-down
+                (row+1, col+2)          #right-down
             ])
         
+        #calling moves calculation method for bishops
         elif isinstance(piece, Bishop):
             variable_step_moves([
-                (-1, -1),   #up-left
-                (-1, 1),    #up-right
-                (1, -1),    #down-left
-                (1, 1)      #down-right
+                (-1, -1),               #up-left
+                (-1, 1),                #up-right
+                (1, -1),                #down-left
+                (1, 1)                  #down-right
             ])  
         
+        #calling moves calculation method for rooks
         elif isinstance(piece, Rook):
             variable_step_moves([
-                (-1, 0),     #up
-                (1, 0),      #down
-                (0, -1),     #left
-                (0, 1)      #right
+                (-1, 0),                #up
+                (1, 0),                 #down
+                (0, -1),                #left
+                (0, 1)                  #right
             ])    
         
+        #calling moves calculation method for queens
         elif isinstance(piece, Queen):
             variable_step_moves([
-                (-1, -1),   #up-left
-                (-1, 1),    #up-right
-                (1, -1),    #down-left
-                (1, 1),     #down-right
-                (-1, 0),     #up
-                (1, 0),      #down
-                (0, -1),     #left
-                (0, 1)      #right
+                (-1, -1),               #up-left
+                (-1, 1),                #up-right
+                (1, -1),                #down-left
+                (1, 1),                 #down-right
+                (-1, 0),                #up
+                (1, 0),                 #down
+                (0, -1),                #left
+                (0, 1)                  #right
             ])    
         
+        #calling moves calculation method for kings
         elif isinstance(piece, King):
             fixed_step_moves([
-                (row+1, col),
-                (row+1, col+1),
-                (row+1, col-1),
-                (row-1, col),
-                (row-1, col+1),
-                (row-1, col-1),
-                (row, col-1),
-                (row, col+1)
+                (row+1, col),           #down
+                (row+1, col+1),         #down-right
+                (row+1, col-1),         #down-left
+                (row-1, col),           #up
+                (row-1, col+1),         #up-right
+                (row-1, col-1),         #up-left
+                (row, col-1),           #left
+                (row, col+1)            #right
             ])

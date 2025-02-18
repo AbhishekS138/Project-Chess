@@ -1,25 +1,27 @@
-import pygame
-import os
-
 from game.scripts.config.Sound import Sound
 from game.scripts.config.Theme import Theme
 from game.scripts.Constants import *
 
+import pygame
+import os
+
 class Config:
     
     def __init__(self):
-        self.add_sounds()
-        self.themes = []
-        self.add_theme()
-        self.index = 0
-        self.theme = self.themes[self.index]
-        self.font = pygame.font.SysFont('monospace', 14, bold=True)        
+        self.add_sounds()                                               #add all defined sounds
+        self.themes = []                                                #list of possible themes
+        self.add_theme()                                                #add all defined themes
+        self.index = 0                                                  #index for themes, default set to 0
+        self.theme = self.themes[self.index]                            #theme set to themes[index]
+        self.font = pygame.font.SysFont('monospace', 14, bold=True)     #font for row and col labels
     
+    #method to change themes
     def change_theme(self):
-        self.index += 1
-        self.index %= len(self.themes)
-        self.theme = self.themes[self.index]
-        
+        self.index += 1                         #incrementing index
+        self.index %= len(self.themes)          #prevents out of bounds error
+        self.theme = self.themes[self.index]    #sets the theme according to the index
+    
+    #adds all sound files, as Sound objects
     def add_sounds(self):
         base_sound_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../assets/sounds"))
         self.capture_sound = Sound(os.path.join(base_sound_path, "capture.wav"))
@@ -34,6 +36,7 @@ class Config:
         self.promote_sound = Sound(os.path.join(base_sound_path, "promote.wav"))
         self.ten_seconds_sound = Sound(os.path.join(base_sound_path, "ten_seconds.wav"))
     
+    #adds all themes, with colors defined in Constants class
     def add_theme(self):
         green = Theme(GREEN_LIGHT, GREEN_DARK, GREEN_TRACE_LIGHT, GREEN_TRACE_DARK, GREEN_MOVE_LIGHT, GREEN_MOVE_DARK, LIGHT_RED, DARK_RED)
         brown = Theme(BROWN_LIGHT, BROWN_DARK, BROWN_TRACE_LIGHT, BROWN_TRACE_DARK, BROWN_MOVE_LIGHT, BROWN_MOVE_DARK, LIGHT_RED, DARK_RED)
