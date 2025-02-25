@@ -10,3 +10,14 @@ class Sound:
     #method to play the sound file of the Sound object 
     def play(self):
         pygame.mixer.Sound.play(self.sound)
+        
+    #exclude the pygame.mixer.Sound object during deepcopy.
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["sound"]                          #remove unpicklable object
+        return state
+
+    #reload the sound object after deepcopy.
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.sound = pygame.mixer.Sound(self.path)  #reload sound from path

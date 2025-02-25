@@ -64,7 +64,7 @@ class Main:
                             piece = _board.squares[clicked_row][clicked_col].piece          #gets the piece
                             
                             if piece.color == _game.next_turn_player:                       #if clicked piece has same color as current player
-                                _board.calc_moves(piece, clicked_row, clicked_col)          #calculates valid moves for clicked piece
+                                _board.calc_moves(piece, clicked_row, clicked_col, True)    #calculates valid moves for clicked piece
                                 _drag.initial_pos(event.pos)                                #sets initial row and col attributes of Drag object
                                 _drag.drag_set(piece)                                       #sets dragging state to True of Drag object
                                 
@@ -96,6 +96,9 @@ class Main:
                             _game.move_capture_sound(captured)                              #plays capture or move sound
                             
                             display()                                                       #displays everything
+                            
+                            #debug print, prints the move made
+                            print(f'{piece.color} {piece.name} moved from {chr(initial.col+97)}{ROWS-initial.row} to {chr(final.col+97)}{ROWS-final.row}')
                         
                         else:                                                               #plays illegal sound if move made is invalid
                             _game.illegal_sound() 

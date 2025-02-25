@@ -13,13 +13,31 @@ class Config:
         self.add_theme()                                                #add all defined themes
         self.index = 0                                                  #index for themes, default set to 0
         self.theme = self.themes[self.index]                            #theme set to themes[index]
-        self.font = pygame.font.SysFont('monospace', 14, bold=True)     #font for row and col labels
+        self.font_name = 'monospace'
+        self.font_size = 14
+        self.font_bold = True
+        self.load_font()
+
+    #Load the font object from stored attributes.
+    def load_font(self):
+        self.font = pygame.font.SysFont(self.font_name, self.font_size, bold=self.font_bold)
+
+    #exclude the pygame.font.Font object during deepcopy.
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["font"]                                                   #remove unpicklable object
+        return state
+
+    #reload the font object after deepcopy.
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.load_font()                                                    #reload font after deepcopy
     
     #method to change themes
     def change_theme(self):
-        self.index += 1                         #incrementing index
-        self.index %= len(self.themes)          #prevents out of bounds error
-        self.theme = self.themes[self.index]    #sets the theme according to the index
+        self.index += 1                                                     #incrementing index
+        self.index %= len(self.themes)                                      #prevents out of bounds error
+        self.theme = self.themes[self.index]                                #sets the theme according to the index
     
     #adds all sound files, as Sound objects
     def add_sounds(self):
