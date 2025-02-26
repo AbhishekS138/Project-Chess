@@ -2,7 +2,6 @@ from game.scripts.Constants import *
 from game.scripts.gui.Square import Square
 from game.scripts.gui.Piece import *
 from game.scripts.logic.Move import Move
-from game.scripts.config.Config import Config
 
 import pygame
 import copy
@@ -16,7 +15,8 @@ class Board:
         self.last_move = None           #last move made on the board
         self._add_piece('white')        #adds pieces with white color
         self._add_piece('black')        #adds pieces with black color
-        self.config = Config()          #Config object
+        self.promotion_flag = False     #flag for pawn promotion
+        self.castle_flag = False        #flag for castling
     
     #add piece of a color to any square of the board
     def _add_piece(self, color):
@@ -55,16 +55,18 @@ class Board:
         
         #pawn promotion
         if isinstance(piece, Pawn):
-            self.promotion(piece, final)            #calls method to promote Pawn piece at final Square
+            if final.row == 0 or final.row == 7:                                    #checks if pawn has reached 0th or 7th row
+                self.squares[final.row][final.col].piece = Queen(piece.color)       #renders a Queen piece at final Square
+                self.promotion_flag = True                                          #sets promotion flag to True
         
         #castling
         if isinstance(piece, King):
             if abs(initial.col - final.col) == 2:                                   #if King moves 2 squares
                 difference = final.col - initial.col                                #difference between final and initial col
                 rook = piece.left_rook if difference < 0 else piece.right_rook      #left rook if king moves to left, else right rook
-                if isinstance(rook, Rook):                                          #if rook belongs to Rook class
-                    self.config.castle_sound.play()                                 #play castling sound
+                if isinstance(rook, Rook) and rook.moves:                           #if rook belongs to Rook class
                     self.final_move(rook, rook.moves[-1])                           #move rook as per the last move in its moves list
+                    self.castle_flag = True                                         #sets castle flag to True
         
         #move set to true
         piece.moved = True
@@ -94,12 +96,6 @@ class Board:
                         if isinstance(temp_move.final.piece, King):             #checks if enemy piece can capture the king
                             return True
         return False
-    
-    #method to promote a Pawn to a queen
-    def promotion(self, piece, final):
-        if final.row == 0 or final.row == 7:                                    #checks if pawn has reached 0th or 7th row
-            self.config.promote_sound.play()                                    #plays promotion sound
-            self.squares[final.row][final.col].piece = Queen(piece.color)       #renders a Queen piece at final Square
     
     #defining castling move squares of rooks and king 
     def castle_moves(self, king, rook, rook_col):

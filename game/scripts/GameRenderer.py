@@ -4,7 +4,7 @@ from game.scripts.logic.Drag import Drag
 from game.scripts.config.Config import Config
 
 import pygame
-class Game:
+class GameRenderer:
     
     def __init__(self, surface):
         self.surface = surface                      #game surface on which everything is to be rendered
@@ -123,3 +123,11 @@ class Game:
     #method to play illegal move sound
     def illegal_sound(self):
         self.config.illegal_sound.play()
+        
+    #method to play promotion sound
+    def promotion_sound(self):
+        self.config.promote_sound.play()
+        
+    #method to play castling sound
+    def castle_sound(self):
+        self.config.castle_sound.play()
