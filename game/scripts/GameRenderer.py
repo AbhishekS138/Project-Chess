@@ -4,7 +4,7 @@ from game.scripts.logic.Drag import Drag
 from game.scripts.config.Config import Config
 
 import pygame
-class Game:
+class GameRenderer:
     
     def __init__(self, surface):
         self.surface = surface                      #game surface on which everything is to be rendered
