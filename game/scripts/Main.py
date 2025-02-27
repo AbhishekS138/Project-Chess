@@ -1,6 +1,7 @@
 from game.scripts.Constants import *
 from game.scripts.GameRenderer import GameRenderer
 from game.scripts.GameController import GameController
+from game.scripts.gui.Menu import Menu
 
 import sys
 import pygame
@@ -18,6 +19,7 @@ class Main:
         self.menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
         self.renderer = GameRenderer(self.game_surface)                     #game renderer object
         self.controller = GameController(self.renderer)                     #game controller object
+        self.menu = Menu(self.menu_surface)                                 #menu object
     
     #method for everything, called by run.py            
     def run(self):
