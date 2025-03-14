@@ -58,7 +58,6 @@ class GameController:
             if self.board.valid_move(self.drag.piece, move):                            #if move is within list of calculated valid moves
                 captured = self.board.squares[final_row][final_col].has_piece()         #boolean flag for capturing a piece
                 self.board.final_move(self.drag.piece, move)                            #sets the board according to the move
-                self.renderer.move_capture_sound(captured)                              #plays capture or move sound
                 
                 self.display()                                                          #displays everything
                 
@@ -71,6 +70,7 @@ class GameController:
             if self.drag.piece.moved == True:
                 self.drag.piece.moved = False                                           #sets moved flag of piece to False
                 self.renderer.next_turn()                                               #switches to the other color
+                self.effects(self.renderer.next_turn_player, captured)                  #checks for mate
         
         self.drag.undrag_set()                                                          #sets dragging state to False
     
@@ -85,3 +85,22 @@ class GameController:
         if event.key == pygame.K_r:
             self.renderer.reset()                                                       #restarts Game object on game_screen
             self.__init__(self.renderer)                                                #reinitializes GameController object
+    
+    #method to run audio methods of renderer    
+    def effects(self, color, captured):
+        if self.board.is_mate(color):                                                   #checks if the move puts the opponent under mate
+            self.renderer.mate_sound()                                                  #plays mate sound
+        else:
+            if self.board.is_check_after_move(self.drag.piece):                         #checks if the move puts the opponent under check
+                    self.renderer.check_sound()                                         #plays check sound
+            else:
+                self.renderer.move_capture_sound(captured)                              #plays capture or move sound
+            
+            if self.board.promotion_flag:                                               #checks if the move puts the pawn under promotion
+                self.board.promotion_flag = False                                       #sets promotion flag to False
+                self.renderer.promotion_sound()                                         #plays promotion sound
+                
+            if self.board.castle_flag:                                                  #checks if the move puts the king under castling
+                self.board.castle_flag = False                                          #sets castle flag to False
+                self.renderer.castle_sound()                                            #plays castling sound
+                

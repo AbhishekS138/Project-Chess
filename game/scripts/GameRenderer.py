@@ -99,19 +99,8 @@ class GameRenderer:
             #renders 2 squares in the list [initial, final] with the trace colors of theme
             for pos in [initial, final]:
                 self.draw_rect(theme.trace, pos.row, pos.col)       #rendering all squares with the trace colors of theme
-                    
-    #OTHER METHODS
-    #method to switch next turn player
-    def next_turn(self):
-        self.next_turn_player = 'black' if self.next_turn_player == 'white' else 'white'
-        
-    #method to change themes
-    def change_theme(self):
-        self.config.change_theme()
-        
-    #method to reset Game object with same game surface
-    def reset(self):
-        self.__init__(self.surface)
+    
+    #AUDIO METHODS
     
     #method to play capture sound if captured exists, else plays move sound
     def move_capture_sound(self, captured=False):
@@ -123,3 +112,33 @@ class GameRenderer:
     #method to play illegal move sound
     def illegal_sound(self):
         self.config.illegal_sound.play()
+        
+    #method to play promotion sound
+    def promotion_sound(self):
+        self.config.promote_sound.play()
+        
+    #method to play castling sound
+    def castle_sound(self):
+        self.config.castle_sound.play()
+        
+    #method to play check sound
+    def check_sound(self):
+        self.config.move_check_sound.play()
+        
+    #method to play mate sound
+    def mate_sound(self):
+        self.config.game_end_sound.play()
+                  
+    #OTHER METHODS
+    
+    #method to switch next turn player
+    def next_turn(self):
+        self.next_turn_player = 'black' if self.next_turn_player == 'white' else 'white'
+        
+    #method to change themes
+    def change_theme(self):
+        self.config.change_theme()
+        
+    #method to reset Game object with same game surface
+    def reset(self):
+        self.__init__(self.surface)
